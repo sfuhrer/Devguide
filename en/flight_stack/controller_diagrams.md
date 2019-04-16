@@ -16,6 +16,58 @@ Request access from dev team. -->
 * Depending on the mode, the outer (position) loop is bypassed (shown as a multiplexer after the outer loop). The position loop is only used when holding position or when the requested velocity in an axis is null.
 * The integrator in the inner loop (velocity) controller includes an anti-reset windup (ARW) using a clamping method.
 
+## Fixed-Wing Position Controller
+
+### Total Energy Control System (TECS)
+The PX4 implementation of the Total Energy Control System (TECS) enables simultaneous control of true airspeed and altitude of a fixed wing aircraft.
+The code is implementated as a library which is used in the fixed wing position control module (make a reference here). As seen in the diagram below, TECS receives as inputs airspeed and altitude setpoints and outputs a throttle and pitch angle setpoint. These two outputs are sent to the fixed wing attitude controller which implements the attitude control solution. It's therfore important to understand that the performance of TECS is directly affected by the performance of the pitch control loop. A poor tracking of airspeed and altitude is often caused by a poor tracking of the aircraft pitch angle.
+
+> **Note** Make sure to tune the attitude controller before attempting to tune TECS.
+
+![TECS](../../assets/diagrams/tecs_in_context.svg)
+
+Simulataneous control of true airspeed and height is not a trivial task. Increasing aircraft pitch angle will cause an increase in height but also a decrease in airspeed. Increasing the throttle will increase airspeed but also height will increase due to the increase in lift. Therefore, we have two inputs (pitch angle and throttle) which both affect the two outputs (airspeed and altitude) which makes the control problem challenging.
+
+TECS offers a solution by respresenting the problem in terms of energies rather than the original setpoints. The total energy of an aircraft is the sum of kinetic and potential energy. Thrust (via throttle control) increases the total energy state of the aircraft. A given total energy state can be achieved by arbitrary combinations of potential and kinetic energies. In other words, flying at a high altitude but at a slow speed can be equivalent to flying at a low altitude but at a faster airspeed in a total energy sense. We refer to this as the specific energy balance and it is calculated from the current altitude and true airspeed setpoint.
+The specific energy balance is controlled via the aircraft pitch angle. An increase in pitch angle transfers kinetc to potential energy and a negative pitch angle vice versa.
+The control problem was therefore decoupled by tranforming the initial setpoints into energy quantities which can be controlled independently.
+We use thrust to regulate the specific total energy of the vehicle and pitch maintain a specific balance between potential (height) and kinetic (speed) energy.
+
+
+#### Total energy control loop
+
+![Energy loop](../../assets/diagrams/TECS_throttle.jpg)
+
+
+#### Total energy balance control loop
+
+![Energy balance loop](../../assets/diagrams/TECS_pitch.jpg)
+
+
+Specific total energy is defines as
+
+$$E = \frac{1}{2} V_T^2 + g h$$
+
+The specific total energy rate is defined as
+
+$$\dot{E} = V_T \dot{V_T} + g \dot{h}$$
+
+From the dynamic equations of an aircraft we get the following relation
+
+$$m\dot{V} = -mgsin(\gamma) + T - D$$
+
+where $$\gamma$$ is the flight path angle of the vehicle. Rearranging for thrust and expressing the flight path angle in terms of height rate and airspeed gives the following equation
+
+
+
+Specific energy balance is defined as
+
+$$B = g h - \frac{1}{2} V_T^2$$
+
+Specific energy balance rate is defined as
+
+$$\dot{B} = g \dot{h} -  V_T \dot{V_T}$$
+
 
 ## Fixed-Wing Attitude Controller
 
