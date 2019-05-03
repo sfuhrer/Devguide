@@ -17,7 +17,7 @@ Request access from dev team. -->
 * The integrator in the inner loop (velocity) controller includes an anti-reset windup (ARW) using a clamping method.
 
 
-## Fixed-Wing Attitude Controller
+## Fixed-wing Attitude Controller
 
 ![FW Attitude Controller Diagram](../../assets/diagrams/px4_fw_attitude_controller_diagram.png)
 
@@ -38,6 +38,30 @@ In order to keep a constant rate, this damping can be compensated using feedforw
 The roll and pitch controllers have the same structure and the longitudinal and lateral dynamics are assumed to be uncoupled enough to work independently. 
 The yaw controller, however, generates its yaw rate setpoint using the turn coordination constraint in order to minimize lateral acceleration, generated when the aircraft is slipping. 
 The yaw rate controller also helps to counteract adverse yaw effects (https://youtu.be/sNV_SDDxuWk) and to damp the [Dutch roll mode](https://en.wikipedia.org/wiki/Dutch_roll) by providing extra directional damping.
+
+
+### Fixed-wing Position Control (L1)
+
+![FW Attitude Controller Diagram](../../assets/diagrams/L1_drawing.png)
+
+PX4 uses L1 guidance logic as a path following controller in fixed-wing flight.
+It has the ability to track both lines and circles and works well with the default gains for a wide range of airframes. 
+
+Look ahead time = period
+
+Based on ...authors..
+
+
+The angle difference between current ground speed heading and reference is called error angle $\eta$:
+$$\eta = ...$$
+
+$$a_{lat} = k_L \cdot \frac{V_G^2}{L_1} * sin(\eta)$$
+
+$$L_1 = q_L * v_G$$
+
+$$q_L = periode * damping * \frac{1}{\pi}$$
+
+$$K_L = 4 * damping^2$$
 
 ### Airspeed Scaling
 
