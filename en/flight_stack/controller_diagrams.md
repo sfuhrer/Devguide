@@ -43,6 +43,8 @@ The yaw rate controller also helps to counteract adverse yaw effects (https://yo
 ### Fixed-wing Position Control (L1)
 
 ![FW Attitude Controller Diagram](../../assets/diagrams/L1_drawing.png)
+<!-- The drawing is on draw.io: https://drive.google.com/file/d/1pkYmADYDjWSD7KPtR39r8kYKdxWKlcwp/view?usp=sharing
+Request access from dev team. -->
 
 PX4 uses L1 guidance logic as a path following controller in fixed-wing flight.
 It has the ability to track both lines and circles and works well with the default gains for a wide range of airframes. 
